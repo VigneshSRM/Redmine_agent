@@ -46,15 +46,37 @@ ln -s "$PWD/skills/redmine-agent" ~/.agents/skills/redmine-agent
 The harness discovers the skill from the `name`/`description` front-matter and loads the
 reference files on demand.
 
-## Configure
+## Configure — where to give the URL & API key
+
+Two options (environment variables always win over the file):
+
+**Option A — `.env` file (easiest):**
 
 ```bash
-export REDMINE_URL=https://redmine.example.com   # no trailing slash
-export REDMINE_API_KEY=<key from /my/account>    # Administration → Settings → API must be enabled
+cp .env.example .env      # then edit .env and fill in:
 ```
 
-Never hardcode keys. An optional `REDMINE_ADMIN_KEY` supports impersonation
-(`X-Redmine-Switch-User`) for admin accounts only.
+```dotenv
+REDMINE_URL=https://redmine.mycompany.com
+REDMINE_API_KEY=paste-your-api-key-here
+```
+
+Put `.env` in the current directory or at this repository root. It is gitignored —
+never commit real keys.
+
+**Option B — environment variables:**
+
+```bash
+export REDMINE_URL=https://redmine.mycompany.com   # no trailing slash
+export REDMINE_API_KEY=<key from /my/account>      # Administration → Settings → API must be enabled
+```
+
+**Where do I find the API key?** In Redmine: click your name (top right) → **My account**
+→ right-hand pane shows **API access key** (Show/Copy). If nothing is there, ask an admin
+to enable *Administration → Settings → API → Enable REST API* first.
+
+An optional `REDMINE_ADMIN_KEY` supports impersonation (`X-Redmine-Switch-User`) for
+admin accounts only. Never hardcode keys in scripts or tickets.
 
 ## CLI quick start
 

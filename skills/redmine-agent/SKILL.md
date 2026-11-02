@@ -25,6 +25,8 @@ canonical mail / resolution templates.
 ## 1. Configuration & Authentication
 
 All requests go to `{REDMINE_URL}/...` with JSON (`Accept: application/json`).
+Credentials come from environment variables **or** a `.env` file (current directory or
+repository root; copy `.env.example` → `.env`). Real environment variables win.
 
 | Variable | Required | Meaning |
 |---|---|---|

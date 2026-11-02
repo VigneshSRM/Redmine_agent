@@ -963,15 +963,40 @@ def build_parser():
     return p
 
 
+def load_dotenv():
+    """Load REDMINE_URL / REDMINE_API_KEY from a .env file if not already in the env.
+
+    Search order: ./.env (current directory), then the repository root (three levels
+    above this script). Lines are KEY=VALUE, '#' starts a comment. Real environment
+    variables always win over the file. Keep .env out of git (it is .gitignored).
+    """
+    candidates = [Path.cwd() / ".env", Path(__file__).resolve().parents[3] / ".env"]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip("'\"")
+            if k in ("REDMINE_URL", "REDMINE_API_KEY", "REDMINE_ADMIN_KEY", "REDMINE_AGENT_NAME") and k not in os.environ:
+                os.environ[k] = v
+        return
+
+
 def main(argv=None):
     args = build_parser().parse_args(argv)
     if args.cmd in ("render", "templates"):
         args.func(None, args)  # offline commands need no credentials
         return
+    load_dotenv()
     url = os.environ.get("REDMINE_URL")
     key = os.environ.get("REDMINE_API_KEY")
     if not url or not key:
-        die("set REDMINE_URL and REDMINE_API_KEY environment variables", 2)
+        die("REDMINE_URL / REDMINE_API_KEY not set. Either export them as environment "
+            "variables, or put them in a .env file (see .env.example) in the current "
+            "directory or at the repository root.", 2)
     client = Redmine(url, key)
     try:
         args.func(client, args)
