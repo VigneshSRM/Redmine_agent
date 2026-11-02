@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "description": "Machine-readable copy of templates/mail-templates.md and templates/resolution-templates.md used by scripts/redmine.py",
+    "placeholders": [
+      "issue_id", "subject", "project", "tracker", "priority", "status",
+      "assignee", "approver", "approver_id", "requester", "previous_assignee",
+      "resolution_code", "resolution_detail", "duplicate_of", "change_ref",
+      "affected_versions", "fixed_version", "decision_owner", "revisit_condition",
+      "attempts", "environments", "external_ref", "reason", "due_date",
+      "sla_state", "sla_deadline", "sla_elapsed_pct", "url", "date", "agent",
+      "problem_statement", "root_cause", "resolution_steps", "verification",
+      "prevention", "approval_journal_id", "approval_date", "session_ref",
+      "open_total", "new_total", "due_today", "sla_warning_total",
+      "sla_breach_total", "attention_list"
+    ]
+  },
+  "mail": {
+    "assignment": {
+      "subject": "[Assigned] #{{issue_id}} {{subject}}",
+      "body": "Hello {{assignee}},\n\nyou are now assigned to ticket #{{issue_id}} \"{{subject}}\" ({{tracker}} · {{priority}} · {{project}}).\n\nSummary: see ticket description\nDue date: {{due_date}}\nCurrent status: {{status}}\n\nNext steps:\n  1. Review the ticket and its history.\n  2. Update the status when you start (In Progress).\n  3. Post progress notes on the ticket so everyone stays informed.\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    },
+    "approval_request": {
+      "subject": "[Approval needed] #{{issue_id}} {{subject}}",
+      "body": "Hello {{approver}},\n\nticket #{{issue_id}} \"{{subject}}\" ({{project}} · {{priority}}) has been resolved and is\nwaiting for your approval to close.\n\nWhat was done:\n{{resolution_detail}}\n\nProposed resolution code: {{resolution_code}}\n\nPlease reply ON THIS TICKET with exactly one of:\n  APPROVED            — the agent will close the ticket\n  REJECTED: <reason>  — the ticket goes back to the assignee ({{assignee}})\n\nApproval deadline: {{due_date}}\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    },
+    "approval_granted": {
+      "subject": "[Approved] #{{issue_id}} {{subject}}",
+      "body": "Approval recorded for #{{issue_id}} \"{{subject}}\".\n\nApprover : {{approver}}\nDecision : APPROVED\nDate     : {{date}}\nResolution code: {{resolution_code}}\n\nThe ticket is being closed now — see the closure notice below/next.\n\nTicket: {{url}}\n\n— {{agent}}"
+    },
+    "approval_rejected": {
+      "subject": "[Rejected] #{{issue_id}} {{subject}}",
+      "body": "Approval was DENIED for #{{issue_id}} \"{{subject}}\".\n\nApprover : {{approver}}\nDecision : REJECTED\nReason   : {{reason}}\nDate     : {{date}}\n\nThe ticket returns to {{status}} and is back with {{assignee}} for rework.\nPlease address the reason above and resubmit for approval.\n\nTicket: {{url}}\n\n— {{agent}}"
+    },
+    "closure_notice": {
+      "subject": "[Closed] #{{issue_id}} {{subject}}",
+      "body": "Ticket #{{issue_id}} \"{{subject}}\" ({{tracker}} · {{project}}) is now CLOSED.\n\nResolution : {{resolution_code}} — {{resolution_detail}}\nApproved by: {{approver}}\nClosed on  : {{date}}\n\nFull resolution record is on the ticket (see the resolution note).\n\nThank you,\n{{agent}}\n\nTicket: {{url}}"
+    },
+    "sla_warning": {
+      "subject": "[SLA warning] #{{issue_id}} {{subject}} — {{sla_elapsed_pct}}% of time used",
+      "body": "SLA WARNING for #{{issue_id}} \"{{subject}}\" ({{priority}} · {{project}}).\n\nClock    : resolution SLA\nDeadline : {{sla_deadline}} (UTC)\nConsumed : {{sla_elapsed_pct}}%\nAssignee : {{assignee}}\n\nPlease prioritise this ticket or renegotiate the deadline with the requester.\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    },
+    "sla_breach": {
+      "subject": "[SLA BREACH] #{{issue_id}} {{subject}}",
+      "body": "SLA BREACHED for #{{issue_id}} \"{{subject}}\" ({{priority}} · {{project}}).\n\nDeadline : {{sla_deadline}} (UTC)\nAssignee : {{assignee}}\nReason   : {{reason}}\n\nActions taken by the agent: SLA state set to Breached, priority raised one step,\nproject lead added as watcher. Immediate recovery expected — please post a plan\non the ticket within the next hour.\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    },
+    "sla_escalation": {
+      "subject": "[SLA ESCALATION] #{{issue_id}} {{subject}} — management attention required",
+      "body": "ESCALATION for #{{issue_id}} \"{{subject}}\" ({{priority}} · {{project}}).\n\nThe resolution SLA has been breached for more than twice its target:\nDeadline was {{sla_deadline}} (UTC), currently {{sla_elapsed_pct}}%+ consumed.\n\nAssignee : {{assignee}}\nReason   : {{reason}}\n\n@project-lead please assign recovery ownership and update the ticket today.\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    },
+    "daily_digest": {
+      "subject": "[Digest] {{project}} ticket health — {{date}}",
+      "body": "Daily ticket digest — {{project}} ({{date}})\n\nOpen tickets        : {{open_total}}\nNew since yesterday : {{new_total}}\nDue today           : {{due_today}}\nSLA warning         : {{sla_warning_total}}\nSLA breached        : {{sla_breach_total}}\n\nNeeds attention:\n{{attention_list}}\n\nFull SLA report is attached to the tracking ticket / news item.\n\n— {{agent}}"
+    },
+    "reassignment": {
+      "subject": "[Reassigned] #{{issue_id}} {{subject}}",
+      "body": "Ticket #{{issue_id}} \"{{subject}}\" has been reassigned.\n\nPrevious assignee : {{previous_assignee}}\nNew assignee      : {{assignee}}\nReason            : {{reason}}\n\nTicket: {{url}}\n\n— {{agent}}, {{date}}"
+    }
+  },
+  "resolution_codes": {
+    "Fixed": "Root cause found and removed (patch, config, data fix deployed and verified).",
+    "Works as Designed": "Behaviour is the documented/intended one.",
+    "Duplicate": "Same root cause as another ticket. Requires duplicate_of.",
+    "Invalid": "Not a real defect (wrong report, misconfiguration, user error).",
+    "Incomplete": "Cannot act: missing info past the waiting period.",
+    "Cannot Reproduce": "Never observed despite stated attempts.",
+    "Won't Fix": "Real, but fix declined (cost/risk/obsolete). Requires decision_owner + reason.",
+    "Cancelled": "Request withdrawn or no longer needed.",
+    "External": "Fixed/resolved by a third party. Requires external_ref.",
+    "Not Applicable": "Out of scope for this project."
+  },
+  "resolution_note": {
+    "subject": "== RESOLUTION RECORD · #{{issue_id}} {{subject}} ==",
+    "body": "== RESOLUTION RECORD · #{{issue_id}} {{subject}} ==\n\nResolution code : {{resolution_code}}\nApproved by     : {{approver}} on {{date}}\nClosed by       : {{agent}}\n\n1) PROBLEM\n{{problem_statement}}\n\n2) ROOT CAUSE\n{{root_cause}}\n\n3) RESOLUTION\n{{resolution_steps}}\n\n4) VERIFICATION\n{{verification}}\n\n5) PREVENTION / FOLLOW-UP\n{{prevention}}\n\nApproval audit: approver={{approver}} (user #{{approver_id}}) · decision=APPROVED ·\njournal #{{approval_journal_id}} at {{approval_date}} · closed={{date}}"
+  },
+  "resolution_addenda": {
+    "Fixed": "Fix deployed in: {{change_ref}}\nAffected versions: {{affected_versions}}\nFixed version: {{fixed_version}}",
+    "Duplicate": "Duplicate of #{{duplicate_of}} — all further work continues there.\nRelation added: #{{duplicate_of}} duplicates #{{issue_id}}.",
+    "Won't Fix": "Decision owner: {{decision_owner}}\nRationale: {{reason}}\nRevisit condition: {{revisit_condition}}",
+    "Cannot Reproduce": "Attempted: {{attempts}}\nEnvironments: {{environments}}\nReopen with: exact steps, environment details, and timestamps.",
+    "External": "Vendor/external reference: {{external_ref}}\nResolution received: {{resolution_detail}}",
+    "Cancelled": "Reason: {{reason}}\nRequested by: {{requester}}",
+    "Invalid": "Reason: {{reason}}\nRequested by: {{requester}}",
+    "Incomplete": "Reason: {{reason}}\nRequested by: {{requester}}",
+    "Not Applicable": "Reason: {{reason}}\nRequested by: {{requester}}"
+  },
+  "sla_policy": {
+    "Critical": {"response_hours": 1, "resolution_hours": 8},
+    "Urgent": {"response_hours": 1, "resolution_hours": 8},
+    "High": {"response_hours": 4, "resolution_hours": 24},
+    "Normal": {"response_hours": 8, "resolution_hours": 72},
+    "Low": {"response_hours": 24, "resolution_hours": 168}
+  }
+}
